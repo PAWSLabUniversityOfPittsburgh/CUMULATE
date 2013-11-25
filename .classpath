@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/icu4j_3_4.jar"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/iri.jar"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/jena.jar"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/paws-core.jar"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/sedona-report.jar"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/sedona-vocab.jar"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/Users/myudelson/Documents/workspace/paws/cbum/web/WEB-INF/lib/xml-apis.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

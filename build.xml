@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="CUMULATE v.2" default="dist"  basedir=".">
+	<!-- Imports -->
+	<import file="../ant_global.xml" />
+	
+	<!-- Folder variables -->
+	<property name="context_path" value="/cbum"/>
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="build_1_4" location="build_1_4"/>
+	<property name="web" location="web"/>
+	<property name="paws-core-jar" location="${web}/WEB-INF/lib/paws-core.jar"/>
+	<property name="paws-cbum-jar" location="${web}/WEB-INF/lib/paws-cbum.jar"/>
+	<property name="paws-cbum-reportAPI-jar" location="${web}/WEB-INF/lib/paws-cbum-reportapi.jar"/>
+	<property name="paws-cbum-reportAPI_1_4-jar" location="${web}/WEB-INF/lib/paws-cbum-reportAPI_1_4.jar"/>
+	<property name="war_file" location="cbum.war"/>
+
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete file="${war_file}"/>
+		<delete dir="${build}"/>
+		<delete dir="${build_1_4}"/>
+		<delete file="${paws-cbum-jar}"/>
+		<delete file="${paws-cbum-reportAPI-jar}"/>
+		<delete file="${paws-cbum-reportAPI_1_4-jar}"/>
+	</target>
+	
+	<target name="init" depends="clean">
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+		<mkdir dir="${build_1_4}"/>
+	</target>
+
+	<target name="compile14" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" debug="on" destdir="${build}"/>
+		<javac srcdir="${src}" debug="on" includes="**/ReportAPI.java, **/ProgressEstimatorReport.java" destdir="${build_1_4}" target="1.4" source="1.4"/>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source" >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" debug="on"
+			classpath="${catalina_home}/lib/servlet-api.jar;
+				${catalina_home}/lib/jsp-api.jar;
+				${paws-core-jar};
+				${web}/WEB-INF/lib/sedona-report.jar"
+		/>
+	</target>
+
+	<target name="dist" depends="compile" description="generate the distribution" >
+		<!-- Build KT JAR file -->
+		<jar destfile="${paws-cbum-jar}" basedir="${build}"/>
+		<jar destfile="${paws-cbum-reportAPI-jar}" includes="**/ReportAPI.class,**/*ProgressEstimator*.class,**/UMActivityReportRelay.class" basedir="${build}"/>
+		<jar destfile="${paws-cbum-reportAPI_1_4-jar}" includes="**/*" basedir="${build_1_4}"/>
+		<!-- copy to PAWS-KT
+		<copy todir="../paws_kt/web/WEB-INF/lib/">
+			<fileset file="${paws-cbum-jar}"/>
+		</copy> -->
+		<!-- copy to PAWS-KT2 -->
+		<copy todir="../kt2/web/WEB-INF/lib/">
+			<fileset file="${paws-cbum-jar}"/>
+		</copy>
+		<!-- copy to WEBEX -->
+		<copy todir="../webex/web/WEB-INF/lib/">
+			<fileset file="${paws-cbum-jar}"/>
+		</copy>
+		<!-- copy to NAVEX -->
+		<copy todir="../navex/web/WEB-INF/lib/">
+			<fileset file="${paws-cbum-jar}"/>
+		</copy>
+		<!-- copy to PWS@L3S
+		<copy todir="../pws_l3s/web/WEB-INF/lib/">
+			<fileset file="${paws-cbum-jar}"/>
+		</copy> -->
+		<!-- copy to adapt-reader project
+		<copy todir="../adapt2-schedule-pservice/WebContent/WEB-INF/lib/">
+			<fileset file="${paws-cbum-jar}"/>
+		</copy> -->
+		<!-- copy to adapt2.pservice -->
+		<copy todir="../adapt2.pservice/web/WEB-INF/lib/">
+			<fileset file="${paws-cbum-jar}"/>
+		</copy>
+	</target>
+	
+	<target name="war" depends="dist" description="Create WAR file"	>
+		<war destfile="${war_file}" webxml="web/WEB-INF/web.xml">
+		  <fileset dir="web" />
+		  <lib dir="web/WEB-INF/lib" />
+		</war>
+	</target>
+
+	<target name="deploy.loc.mac" description="Install on local mac" depends="war,undeploy.loc.mac">
+		<t_deploy url="${t_manager}" username="${t_username}" password="${t_password}"
+			path="${context_path}" war="${war_file}"/>
+	</target>
+
+	<target name="reload.loc.mac" description="Reload on local mac" depends="war">
+		<t_reload url="${t_manager}" username="${t_username}" password="${t_password}"
+			path="${context_path}"/>
+	</target>
+
+	<target name="undeploy.loc.mac" description="Undeploy on local mac">
+		<t_undeploy url="${t_manager}" username="${t_username}" password="${t_password}"
+			path="${context_path}"/>
+	</target>
+
+</project>
+

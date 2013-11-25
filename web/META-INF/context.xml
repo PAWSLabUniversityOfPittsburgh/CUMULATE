@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context debug="1" reloadable="true">
+<!--	<Valve className="org.apache.catalina.valves.RemoteAddrValve"
+                allow="127\.0\.0\.1"/> -->	
+	<!-- Login --> 
+	<Realm className="org.apache.catalina.realm.DataSourceRealm"
+		dataSourceName="jdbc/portal"
+		localDataSource="true"
+		digest="md5"
+		roleNameCol="Role"
+		userCredCol="Pass"
+		userNameCol="Login"
+		userRoleTable="seq_role"
+		userTable="ent_user"/>
+
+	<!-- Login dataset -->
+	<Resource name="jdbc/portal"
+		auth="Container"
+		type="javax.sql.DataSource" 
+		username="student" 
+		password="student"
+		driverClassName="com.mysql.jdbc.Driver" 
+		url="jdbc:mysql://localhost:3306/portal_test2?autoReconnect=true"
+		maxActive="10" 
+		maxIdle="5"
+		maxWait="1000" />
+
+	<!-- Access to Database -->	
+	<Resource name="jdbc/main"
+		auth="Container"
+		type="javax.sql.DataSource" 
+		username="student" 
+		password="student"
+		driverClassName="com.mysql.jdbc.Driver" 
+		url="jdbc:mysql://localhost:3306/um2?autoReconnect=true"
+		maxActive="1000" 
+		maxIdle="50"
+		maxWait="15000"
+		removeAbandoned="true" 
+		logAbandoned="true" />
+	
+	<!-- Portal Password Manager -->
+	<Resource name="jdbc/portal_pwd"
+		auth="Container"
+		type="javax.sql.DataSource" 
+		username="pwd_manager" 
+		password="pwd1234"
+		driverClassName="com.mysql.jdbc.Driver" 
+		url="jdbc:mysql://localhost:3306/portal_test2"
+		maxActive="30" 
+		maxIdle="10"/>
+
+	<!-- CBUM Password Manager -->
+	<Resource name="jdbc/cbum_pwd"
+		auth="Container"
+		type="javax.sql.DataSource" 
+		username="pwd_manager" 
+		password="pwd1234"
+		driverClassName="com.mysql.jdbc.Driver" 
+		url="jdbc:mysql://localhost:3306/um2"
+		maxActive="30" 
+		maxIdle="10"/>		
+
+	<!-- WADEIn Password Manager -->
+	<Resource name="jdbc/wadein_pwd"
+		auth="Container"
+		type="javax.sql.DataSource" 
+		username="pwd_manager" 
+		password="pwd1234"
+		driverClassName="com.mysql.jdbc.Driver" 
+		url="jdbc:mysql://localhost:3306/wadein"
+		maxActive="30" 
+		maxIdle="10"/>
+		
+
+</Context>

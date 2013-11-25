@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>ADAPT2 Systems</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Language" content="en-US" />
+	<link rel="stylesheet" type="text/css" href="all.css" />
+	
+	<script src="js/md5.js" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		var URL_SERVER = "http://localhost:8080/cbum/remoteauth"; //"http://kt1.exp.sis.pitt.edu:8080/cbum/remoteauth"
+		var SYS_W2 = 0;
+		var SYS_QG = 1;
+		var SYS_NE = 2;
+		var SYS_KS = 3;
+		
+		var systems = [
+			{name : "WADEIn II", sys : "http://kt1.exp.sis.pitt.edu:8080/wadein/servlet/wadein.Dispatcher?a=4&", info : "http://www.sis.pitt.edu/~paws/system_wadein.htm"},
+			{name : "QuizGuide", sys : "http://kt1.exp.sis.pitt.edu:8080/quizguide/interface?ums=http://kt1.exp.sis.pitt.edu:8080/cbum/um&", info : "http://www.sis.pitt.edu/~paws/system_quizguide.htm"},
+			{name : "NavEx", sys : "http://kt1.exp.sis.pitt.edu:8080/navex/Show?scope=1&", info : "http://www.sis.pitt.edu/~paws/system_navex.htm"},
+			{name : "KnowledgeSea 2", sys : "", info : "http://www.sis.pitt.edu/~paws/system_knowledgesea2.htm"}
+		];
+		
+		var SEPARATOR = ",";
+		
+		var RAND_PARAM_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		var RAND_PARAM_LEN = 32;
+		
+		var data = {usr: null, grp: "world", sid: null};
+		var xmlHttp = null;
+		
+		
+		// - - - -
+		function init() {
+			dg("logUsername").focus();
+			dg("logPasswd").value = "";
+			dg("regPasswd01").value = "";
+			dg("regPasswd02").value = "";
+		}
+		
+		
+		// - - - -
+		function switchToLogin() { hide("signup"); hide("signupLink"); show("login"); show("loginLink"); }
+		function switchToSignup() { hide("login"); hide("loginLink"); show("signup"); show("signupLink"); }
+		
+		
+		// - - - -
+		function doLogin() {
+			if (dg("logUsername").value.length == 0) { alert("User name cannot be empty"); return; }
+			if (dg("logPasswd").value.length == 0) { alert("Password cannot be empty"); return; }
+			
+			var params = 
+				"action=login&" +
+				"grp=" + data.grp + "&" +
+				"usr=" + dg("logUsername").value + "&" +
+				"pwd=" + escape(dg("logPasswd").value) + "&" +
+				"md5=" + hex_md5(dg("logPasswd").value) + "&" +
+				"q=" + getRandParam();
+			
+			dg("btnLogin").disabled = true;
+			sendReq(URL_SERVER, params, doLogin_resp);
+		}
+		
+				
+		// - - - -
+		function doLogin_resp() {
+			if (xmlHttp.readyState == 4) {
+				dg("btnLogin").disabled = false;
+				
+				if (xmlHttp.status == 200) {
+					var resp = xmlHttp.responseText;
+					xmlHttp = null;
+					
+					var idx = resp.indexOf(SEPARATOR);
+					var retCode = (idx != -1 ? resp.substr(0, idx) : resp);
+					if (retCode == 0) {
+						alert("Login unsuccessful. Please check if the user name and password provided are correct.");
+						return;
+					}
+					
+					data.usr = dg("logUsername").value;
+					data.sid = resp;
+					login();
+				}
+				else alert("Server error occured. Please retry");
+			}
+		}
+		
+		
+		// - - - -
+		function doSignup() {
+			if (dg("regUsername").value.length == 0) { alert("User name cannot be empty"); return; }
+			if (dg("regPasswd01").value.length == 0) { alert("Password cannot be empty"); return; }
+			if (dg("regPasswd02").value.length == 0) { alert("Please confirm your password"); return; }
+			if (dg("regPasswd01").value !== dg("regPasswd02").value) { alert("Password and the confirmed password do not match -- please reenter"); return; }
+			
+			var params = 
+				"action=registration&" +
+				"grp=" + data.grp + "&" +
+				"usr=" + dg("regUsername").value + "&" +
+				"pwd=" + escape(dg("regPasswd01").value) + "&" +
+				"md5=" + hex_md5(dg("regPasswd01").value) + "&" +
+				"fname=" + dg("regFName").value + "&" +
+				"lname=" + dg("regLName").value + "&" +
+				"email=" + dg("regEmail").value + "&" +
+				"org=" + dg("regOrganization").value + "&" +
+				"city=" + dg("regCity").value + "&" +
+				"country=" + dg("regCountry").value + "&" +
+				"how=" + dg("regHow").value + "&" +
+				"q=" + getRandParam();
+			
+			dg("btnSignup").disabled = true;
+			sendReq(URL_SERVER, params, doSignup_resp);
+		}
+		
+		
+		// - - - -
+		function doSignup_resp() {
+			if (xmlHttp.readyState == 4) {
+				dg("btnSignup").disabled = false;
+				
+				if (xmlHttp.status == 200) {
+					var resp = xmlHttp.responseText;
+					xmlHttp = null;
+					
+					var idx = resp.indexOf(SEPARATOR);
+					var retCode = (idx != -1 ? resp.substr(0, idx) : resp);
+					if (retCode == 0) {
+						alert(resp.substr(resp.indexOf(SEPARATOR) + 1));
+						return;
+					}
+					
+					data.usr = dg("regUsername").value;
+					data.sid = retCode;
+					login();
+				}
+				else alert("Server error occured. Please retry");
+			}
+		}
+		
+		
+		// - - - -
+		function login() {
+			dg("logPasswd").value = "";
+			dg("regPasswd01").value = "";
+			dg("regPasswd02").value = "";
+			
+			hide("login");
+			hide("signup");
+			hide("loginLink");
+			hide("signupLink");
+			show("links");
+			show("logoutLink");
+		}
+		
+		
+		// - - - -
+		function logout() {
+			data.usr = null;
+			data.sid = null;
+			
+			hide("links");
+			show("login");
+			show("loginLink");
+			hide("logoutLink");
+		}
+		
+		
+		// - - - -
+		function sysLaunch(idx) { window.open(systems[idx].sys + "usr=" + data.usr + "&grp=" + data.grp + "&sid=" + data.sid); }
+		function sysInfo(idx) { window.open(systems[idx].info); }
+		
+		
+		// - - - -
+		function getXmlHttp() {
+			var xmlHttp = false;
+			
+			/*@cc_on @*/
+			/*@if (@_jscript_version >= 5)
+			try {
+				xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+			}
+			catch (e) {
+				try {
+					xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch (e2) {
+					xmlHttp = false;
+				}
+			}
+			@end @*/
+			
+			if (!xmlHttp && typeof XMLHttpRequest != 'undefined') {
+				xmlHttp = new XMLHttpRequest();
+			}
+			
+			return xmlHttp;
+		}
+		
+		
+		// - - - -
+		function sendReq(url, params, method) {
+			xmlHttp = getXmlHttp();
+			xmlHttp.onreadystatechange = method;
+			xmlHttp.open('POST', url, true);
+			xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xmlHttp.setRequestHeader("Content-length", params.length);
+			xmlHttp.setRequestHeader("Connection", "close");
+			xmlHttp.send(params);
+		}
+		
+		
+		// - - - -
+		function getRandParam() {
+			var param = "";
+			for (var i = 0; i < RAND_PARAM_LEN; i++) {
+				var idx = Math.floor(Math.random() * (RAND_PARAM_CHARS.length));
+				param += RAND_PARAM_CHARS[idx];
+			}
+			return param;
+		}
+		
+		
+		// - - - -
+		function dg(id) { return document.getElementById(id); }
+		function show(id) { dg(id).style.display = "block"; }
+		function hide(id) { dg(id).style.display = "none"; }
+	</script>
+	
+	<style type="text/css">
+		body { background: url('gfx/bg.gif') repeat #999999; margin: 8px; cursor: default; }
+		td { font-family: Verdana, Tahoma, sans-serif; font-size: 13px; }
+		a { text-decoration: none; color: #DF1C1C; font-family: Verdana, Tahoma, sans-serif; font-size: 12px; font-weight: bold; }
+		a:hover { border-bottom: 1px dotted #D50000; color: #D50000; }
+		a.img:hover { border-bottom: 0px; }
+		hr { height: 1px; color: #aaaaaa; }
+		
+		table.title { width: 100%; padding-left: 8px; padding-top: 4px; padding-bottom: 4px; color: #888888; white; background-color: #222222; border-bottom: 1px solid #555555; font-weight: bold; font-family: Palatino Linotype, serif; font-size: 20px; }
+		a.title { font-weight: bold; color: #cccccc; font-family: Palatino Linotype, serif; font-size: 20px; }
+		a.title:hover { color: white;border-bottom: 1px dotted white; }
+		
+		table.main { border: 4px solid #444444; background-color: #E3E3E3; }
+		td.title-adapt2 { background-color: #444444; color: white; }
+		td.title-w2 { border-bottom: 2px solid #444444; border-right: 2px solid #444444; background-color: #FFCD00; }
+		td.title-qg { border-bottom: 2px solid #444444; border-right: 2px solid #444444; background-color: #81B4E6; }
+		td.title-ne { border-bottom: 2px solid #444444; border-right: 2px solid #444444; background-color: #61FF50; }
+		td.title-ks { border-bottom: 2px solid #444444; background-color: #FFFF00; }
+		span.title-adapt2 { font-weight: bold; font-style: italic; font-family: Palatino Linotype, serif; font-size: 26px; }
+		span.subtitle-adapt2 { font-weight: bold; font-style: italic; font-family: Palatino Linotype, serif; font-size: 12px; }
+		span.title-sys { font-weight: bold; font-style: italic; font-family: Palatino Linotype, serif; font-size: 18px; }
+		span.subtitle-sys { font-weight: bold; font-style: italic; font-family: Palatino Linotype, serif; font-size: 12px; color: #444444; }
+		td.form-name { color: #aaaaaa; font-family: Palatino Linotype, serif; font-size: 20px; }
+		input.text { font-size: 14px; font-weight: bold; color: purple; width: 200px; }
+		textarea.text { font-size: 14px; font-weight: bold; color: purple; width: 200px; height: 60px; }
+		input.btn { font-size: 14px; font-weight: bold; width: 120px; height: 32px; }
+		td.login {}
+		td.signup { display: none; }
+		td.link { border-top: 1px solid #888888; background-color: #CDCDCD; }
+		sup.asterix { color: #E30000; font-size: 10px; }
+		
+		td.system-name    { font-weight: bold; order-left: 2px solid #444444; order-top: 2px solid #444444; order-bottom: 2px solid #444444; }
+		td.system-separator { font-size: 1px; }
+		
+		input.btn-sys    { font-size: 14px; font-weight: bold; width: 100px; height: 24px; border: 1px solid #666666; }
+		input.btn-sys-w2 { background-color: #FFCD00; }
+		input.btn-sys-qg { background-color: #81B4E6; }
+		input.btn-sys-ne { background-color: #61FF50; }
+		input.btn-sys-ks { background-color: #FFFF00; }
+		
+		td.footer { font-weight: bold; color: #cccccc; font-size: 10px; text-align: right; }
+		a.footer { font-weight: bold; color: #cccccc; font-size: 10px; }
+		a.footer:hover { color: white;border-bottom: 1px dotted white; }
+	</style>
+</head>
+
+<body onload="init();">
+
+<div align="center">
+<br />
+
+<table cellpadding="0" cellspacing="0" class="page">
+<tr>
+	<td>
+		<table cellpadding="0" cellspacing="4" class="title">
+		<tr>
+			<td width="1"> <a target="_blank" href="http://www.pitt.edu" class="img"><img src="gfx/pitt-logo.jpg" width="32" height="32" border="0" alt="University of Pittsburgh" /></a> </td>
+			<td width="*"> &nbsp;&nbsp;<a target="_blank" href="http://www.pitt.edu" class="title">Pitt</a> &nbsp;&bull;&nbsp;  <a target="_blank" href="http://www.sis.pitt.edu" class="title">SIS</a> &nbsp;&bull;&nbsp; <a target="_blank" href="http://www.sis.pitt.edu/~paws" class="title">PAWS</a> </td>
+		</tr>
+		</table>
+	</td>
+</tr>
+
+<tr>
+	<td>
+		<table cellpadding="10" cellspacing="0" class="main">
+		
+		<!-- Title bar -->
+		<tr>
+			<td colspan="4" class="title-adapt2">
+				<span class="title-adapt2">ADAPT<sup>2</sup></span><br />
+				<span class="subtitle-adapt2">Advanced Distributed Architecture for Personalized Teaching &amp; Training</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="title-w2">
+				<span class="title-sys">WADEIn II</span><br />
+				<span class="subtitle-sys">Expressions</span>
+			</td>
+			
+			<td class="title-qg">
+				<span class="title-sys">QuizGuide</span><br />
+				<span class="subtitle-sys">Quizes</span>
+			</td>
+			
+			<td class="title-ne">
+				<span class="title-sys">NavEx</span><br />
+				<span class="subtitle-sys">Examples</span>
+			</td>
+			
+			<td class="title-ks">
+				<span class="title-sys">KnowledgeSea 2</span><br />
+				<span class="subtitle-sys">Tutorials</span>
+			</td>
+		</tr>
+		
+		<!-- Forms -->
+		<tr>
+			<td class="login" colspan="4">
+				<!-- Login -->
+				<table cellpadding="2" cellspacing="0" class="form" id="login">
+				<tr> <td colspan="3" class="form-name">Login<br /><hr /></td> </tr>
+				<tr> <td>User name</td> <td width="10">&nbsp;</td> <td><input type="text" id="logUsername" class="text" /></td> </tr>
+				<tr> <td>Password</td> <td width="10">&nbsp;</td> <td><input type="password" id="logPasswd" class="text" /></td> </tr>
+				<tr> <td colspan="3" align="right"><input type="button" id="btnLogin" value="Log in!" class="btn" onclick="doLogin();" /></td> </tr>
+				</table>
+				
+				<!-- Sign-up -->
+				<table cellpadding="2" cellspacing="0" class="form" id="signup" style="display: none;">
+				<tr> <td colspan="3" class="form-name">Sign Up<br /><hr /></td> </tr>
+				<tr> <td>User name<sup class="asterix">*</sup></td> <td width="10">&nbsp;</td> <td><input type="text" id="regUsername" class="text" /></td> </tr>
+				<tr> <td>Password<sup class="asterix">*</sup></td> <td width="10">&nbsp;</td> <td><input type="password" id="regPasswd01" class="text" /></td> </tr>
+				<tr> <td>Confirm password<sup class="asterix">*</sup></td> <td width="10">&nbsp;</td> <td><input type="password" id="regPasswd02" class="text" /></td> </tr>
+				<tr> <td colspan="3">&nbsp;</td> </tr>
+				<tr> <td>First name</td> <td width="10">&nbsp;</td> <td><input type="text" id="regFName" class="text" /></td> </tr>
+				<tr> <td>Last name</td> <td width="10">&nbsp;</td> <td><input type="text" id="regLName" class="text" /></td> </tr>
+				<tr> <td>E-mail</td> <td width="10">&nbsp;</td> <td><input type="text" id="regEmail" class="text" /></td> </tr>
+				<tr> <td>Organization</td> <td width="10">&nbsp;</td> <td><input type="text" id="regOrganization" class="text" /></td> </tr>
+				<tr> <td>City</td> <td width="10">&nbsp;</td> <td><input type="text" id="regCity" class="text" /></td> </tr>
+				<tr> <td>Country</td> <td width="10">&nbsp;</td> <td><input type="text" id="regCountry" class="text" /></td> </tr>
+				<tr> <td colspan="3">&nbsp;</td> </tr>
+				<tr> <td valign="top">How did you get here?</td> <td width="10">&nbsp;</td> <td><textarea id="regHow" class="text"></textarea></td> </tr>
+				<tr> <td colspan="3" align="right"><input type="button" id="btnSignup" value="Sign up!" class="btn" onclick="doSignup();" /></td> </tr>
+				</table>
+				
+				<!-- Access Systems -->
+				<table cellpadding="6" cellspacing="0" class="form" id="links" style="display: none;">
+				<tr> <td colspan="2" class="form-name">Access Systems<br /><hr /></td> </tr>
+				
+				<!-- WADEIn II -->
+				<tr>
+					<td class="system-name">&bull;&nbsp;WADEIn II</td>
+					<td>
+						<input type="button" value="Launch" class="btn-sys btn-sys-w2" onclick="sysLaunch(SYS_W2);" />
+						<input type="button" value="More info" class="btn-sys btn-sys-w2" onclick="sysInfo(SYS_W2);" />
+					</td>
+				</tr>
+				
+				<!-- QuizGuide -->
+				<tr>
+					<td class="system-name">&bull;&nbsp;QuizGuide</td>
+					<td>
+						<input type="button" value="Launch" class="btn-sys btn-sys-qg" onclick="sysLaunch(SYS_QG);" />
+						<input type="button" value="More info" class="btn-sys btn-sys-qg" onclick="sysInfo(SYS_QG);" />
+					</td>
+				</tr>
+				<tr>
+					<td class="system-name">&bull;&nbsp;NavEx</td>
+					<td>
+						<input type="button" value="Launch" class="btn-sys btn-sys-ne" onclick="sysLaunch(SYS_NE);" />
+						<input type="button" value="More info" class="btn-sys btn-sys-ne" onclick="sysInfo(SYS_NE);" />
+					</td>
+				</tr>
+				<tr>
+					<td class="system-name">&bull;&nbsp;KnowledgeSea 2</td>
+					<td>
+						<input type="button" value="Launch" class="btn-sys btn-sys-ks" onclick="sysLaunch(SYS_KS);" disabled="disabled" />
+						<input type="button" value="More info" class="btn-sys btn-sys-ks" onclick="sysInfo(SYS_KS);" />
+					</td>
+				</tr>
+				<tr> <td colspan="2">&nbsp;</td> </tr>
+				<tr> <td colspan="2">NOTE: All systems will be launched in a separate window</td> </tr>
+				</table>
+			</td>
+		</tr>
+		
+		<!-- Footer bar -->
+		<tr>
+			<td align="center" class="link" colspan="4">
+				<a href="javascript: switchToSignup();" id="loginLink">No account yet? Sign up here!</a>
+				<a href="javascript: switchToLogin();" id="signupLink" style="display: none;">Go back to login...</a>
+				<a href="javascript: logout();" id="logoutLink" style="display: none;">Logout</a>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+
+<tr>
+	<td class="footer">&copy; <a href="mailto:tol7@pitt.edu" class="footer">Tomek D Loboda</a> 2006</td>
+</tr>
+</table>
+
+</div>
+
+</body>
+
+</html>
