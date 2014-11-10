@@ -71,6 +71,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>um_usrLookup</servlet-name>
+		<servlet-class>edu.pitt.sis.paws.cbum.um_usrLookup</servlet-class>
+	</servlet>
+	 <servlet-mapping>
+		<servlet-name>um_usrLookup</servlet-name>
+		<url-pattern>/usrlkp</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>activityReportSimple</servlet-name>
 		<jsp-file>/WEB-INF/activityReportSimple.jsp</jsp-file>
 	</servlet>
