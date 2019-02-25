@@ -14,6 +14,8 @@ package edu.pitt.sis.paws.cbum;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -95,6 +97,8 @@ public class um_cache2 extends HttpServlet
 		String all_parameters = "app=" + req_application + ";usr=" + req_user + 
 			";grp="+ req_group + ";act=" + req_activity + ";sub=" + req_subactivity + 
 			";res=" + req_result + ";sid=" + req_session + ";svc=" + req_svc + ";ip=" + req_ip;
+		
+		notifyMasteryGrid(req_user, req_result);
 
 		boolean app_found = false;
 		boolean group_found = false;
@@ -410,7 +414,7 @@ public class um_cache2 extends HttpServlet
 				"DateNTimeNS, SVC, AllParameters) VALUES (" + req_application+ "," + 
 				user_id + "," + group_id + ",'" + req_result + "'," + 
 				activity_id + ",'" + req_session + 
-				"','" + s + "'," + System.nanoTime() + ", '" + req_svc + "','" + all_parameters + "');"; 
+				"','" + s + "'," + System.currentTimeMillis() + ", '" + req_svc + "','" + all_parameters + "');"; 
 //System.out.println("um2:qry="+qry);
 			stmt = conn.prepareStatement(qry);
 			stmt.executeUpdate();
@@ -444,6 +448,30 @@ public class um_cache2 extends HttpServlet
 		out.println(result);
 //System.out.println(result);
 		out.close();
+	}
+
+	private void notifyMasteryGrid(String user, String result) {
+		if(user != null && result!= null && (Double.parseDouble(result) == 0.0 || Double.parseDouble(result) == 1.0)) {
+			HttpURLConnection con = null;
+			try {
+				URL url = new URL("http://pawscomp2.sis.pitt.edu/mgnotificate/api/notifyuser?usr="+ user + "&res=" + result);
+				con = (HttpURLConnection) url.openConnection();
+				con.setRequestMethod("GET");
+				con.connect();
+				int status = con.getResponseCode();
+				if(status == HttpURLConnection.HTTP_OK) {
+					System.out.println("MG User " + user + " result " + result + " notified");
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("Exception: Notify MG User " + user + " result " + result);
+			} finally {
+				if(con != null) {
+					con.disconnect();
+				}
+			}
+		}
 	}
 
 }
