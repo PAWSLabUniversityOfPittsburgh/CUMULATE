@@ -2,10 +2,10 @@
 
 <project name="CUMULATE v.2" default="dist"  basedir=".">
 	<!-- Imports -->
-	<import file="../ant_global.xml" />
 	
 	<!-- Folder variables -->
 	<property name="context_path" value="/cbum"/>
+  <property name="catalina_home" value="/usr/local/tomcat"/>
 	<property name="src" location="src"/>
 	<property name="build" location="build"/>
 	<property name="build_1_4" location="build_1_4"/>
@@ -41,9 +41,9 @@
 	<target name="compile" depends="init" description="compile the source" >
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac srcdir="${src}" destdir="${build}" debug="on"
-			classpath="${catalina_home}/lib/servlet-api.jar;
-				${catalina_home}/lib/jsp-api.jar;
-				${paws-core-jar};
+			classpath="${catalina_home}/lib/servlet-api.jar:
+				${catalina_home}/lib/jsp-api.jar:
+				${paws-core-jar}:
 				${web}/WEB-INF/lib/sedona-report.jar"
 		/>
 	</target>
