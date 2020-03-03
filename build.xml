@@ -2,7 +2,7 @@
 
 <project name="CUMULATE v.2" default="dist"  basedir=".">
 	<!-- Imports -->
-	<import file="../ant_global.xml" />
+	<!--<import file="../ant_global.xml" /> -->
 	
 	<!-- Folder variables -->
 	<property name="context_path" value="/cbum"/>
@@ -15,6 +15,7 @@
 	<property name="paws-cbum-reportAPI-jar" location="${web}/WEB-INF/lib/paws-cbum-reportapi.jar"/>
 	<property name="paws-cbum-reportAPI_1_4-jar" location="${web}/WEB-INF/lib/paws-cbum-reportAPI_1_4.jar"/>
 	<property name="war_file" location="cbum.war"/>
+	<property name="catalina_home" location="/Users/pawsres1/Documents/apache-tomcat-6.0.53/"/>
 
 	<target name="clean" description="clean up" >
 		<!-- Delete the ${build} and ${dist} directory trees -->

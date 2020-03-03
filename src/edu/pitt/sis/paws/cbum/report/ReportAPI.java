@@ -177,6 +177,23 @@ public final class ReportAPI
 	 * application ID for jWADEIn
 	 */
 	public static final int APPLICATION_RICCIONI_QUIZ = 29;
+	
+	/**
+	 * application ID for Quizjet Table Tracing
+	 */
+	public static final int APPLICATION_QUIZJET_TABLE_TRACING = 51;
+
+	/**
+	 * /**
+	 * application ID for PCRS (Coding problems)
+	 */
+	public static final int APPLICATION_PCRS = 44;
+	
+	/**
+	 * /**
+	 * application ID for PCEX Challenges
+	 */
+	public static final int APPLICATION_PCEX_CHALLENGE = 47;
 
 	/**
 	 * User Modeling Server URL

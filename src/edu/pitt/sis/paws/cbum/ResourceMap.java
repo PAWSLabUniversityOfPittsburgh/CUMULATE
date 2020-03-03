@@ -538,7 +538,7 @@ System.out.println("... [CBUM] structure loaded in " + (float)(fn_struc-st_struc
 //			catch(Exception e) { e.printStackTrace(System.out); }
 //System.out.println("... [CBUM] ResMap.loadData Foreign topics " + counter + " quizzes " + counter2 + " added."); /// DEBUG
 
-System.out.println("---");
+System.out.println("###  ###");
 System.out.println("mem.total: " + Runtime.getRuntime().totalMemory());
 System.out.println("mem.max  : " + Runtime.getRuntime().maxMemory());
 System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
@@ -556,7 +556,7 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 			// CUMULATE TRACING
 //			qry = "SELECT * FROM ent_user_activity WHERE AppID=2 AND USERID =16  AND ACTIVITYID = 891 " + ((cutout_date!=null)?"WHERE DateNTime>='"+cutout_date+"' ":"") +"ORDER BY DateNTime;"; 
 			qry = "SELECT * FROM ent_user_activity " + ((cutout_date!=null)?"WHERE DateNTime>='"+cutout_date+"' ":"") +"ORDER BY DateNTime;"; 
-			
+			//System.out.println(qry);
 			
 			String qryK = "SELECT * FROM ent_user_knowledge_updates " + ((cutout_date!=null)?"WHERE DateNTime<='"+cutout_date+"' ":"") +"ORDER BY DateNTime;"; 
 //				"WHERE DateNTime BETWEEN '2007-01-01 00:00:00.000' AND '2007-01-17 00:00:00.000' ORDER BY DateNTime;";// WHERE DateNTime='2006-11-17 11:45:18.240';";
@@ -659,6 +659,9 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 					decision = 1;
 				else if(rs14hasNext) // Knowledge only
 					decision = 2;
+				
+				//System.out.println("Decision: "+decision);
+				//System.out.println("A_date_n_time: "+ A_date_n_time);
 			
 				switch (decision)
 				{
@@ -861,7 +864,7 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 			}
 		}
 		
-		System.out.println("---");
+		System.out.println("###  ###");
 		System.out.println("mem.total: " + Runtime.getRuntime().totalMemory());
 		System.out.println("mem.max  : " + Runtime.getRuntime().maxMemory());
 		System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
@@ -1110,26 +1113,32 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 		else if ( (_app_id == 2 || (((_app_id == 11) || (_app_id == 21)) && (_score >=0) && (_score <=1))) || // QuizPack, c/jWADEIn test
 			 ((_app_id == 17) && (_score >= 0) && (_score <= 1)) || // JEliot
 			 ((_app_id == 23) && (_score >= 0) && (_score <= 1)) || // Xin's SQL-KnoT
-			 ((_app_id == 25) && (_score >= 0) && (_score <= 1)) // QuizJET
-			)
+			 ((_app_id == 25) && (_score >= 0) && (_score <= 1)) || // QuizJET
+			 //((_app_id == 41) && (_score >= 0) && (_score <= 1))  // QuizPet
+			 ((_app_id == 51) && (_score >= 0) && (_score <= 1)) || // QuizJET table tracing
+			 ((_app_id == 47) && (_score >= 0) && (_score <= 1)) || // PCEX Challenges
+			 ((_app_id == 44) && (_score >= 0) && (_score <= 1)) ||   // PCRS (Coding problems)
+			 ((_app_id == 19)) // SQL TUTOR from New Zealand
+			) {
 			return iProgressEstimator.BLOOM_IDX_APPLICATION;
-		else if ( 
+		}else if ( 
 			(((_app_id == 3) || (_app_id == 11) || (_app_id == 21)) && (_score == -1)) || // NAVEX, c/jWADEIN EXPLORE, VARSCOPE
 			((_app_id == 5) && (_score >0)) || // KNOWLEDGE SEA II 
 			((_app_id == 15) && (_score == -1)) || // VAR SCOPE
 			((_app_id == 16) && (_score == -1)) || // Boolean tool
-			((_app_id == 19) ) || // SQL TUTOR from New Zealand
+			//((_app_id == 19) ) || // SQL TUTOR from New Zealand
 			((_app_id == 26) && (_score == -1)) || // Jaekyung's IMPROVE
 			((_app_id == 29)) // Anna Riccioni's quizzes
-			)
+			) {
 			return iProgressEstimator.BLOOM_IDX_COMPREHENSION;
-		else if( ((_app_id == 5) && (_score == 0)) || // Knowledge Sea II exploration
+		}else if( ((_app_id == 5) && (_score == 0)) || // Knowledge Sea II exploration
 				((_app_id == 22) && (_score == -1)) || // Ensemble clicks
 				(_app_id == 28) // Anna Riccioni's readings
-				)
+				) {
 			return iProgressEstimator.BLOOM_IDX_KNOWLEDGE;
-		else 
+		}else { 
 			return -1;
+		}
 	}
 
 	/** Function prints an activity progress report to a JSP output stream
@@ -1668,7 +1677,7 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 	public ArrayList conceptReport(ArrayList _in, int _app, String _u, String _g,
 		int _level, String _domain, boolean _user_locking, HttpServletRequest _request)
 	{
-//System.out.println("[cbum] ResourceMap.conceptReport starting...");		
+        System.out.println("[cbum] ResourceMap.conceptReport starting...");		
 		User user = users.findByTitle(_u);
 		User group = groups.findByTitle(_g);
 		int good_count = 0;
@@ -1896,8 +1905,8 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 				ConceptActivity ca = act.concept_links.get(i);
 				if(ca.concept.domain.getId() == dom.getId())
 				{
-System.out.println("ca.concept=" + ca.concept);					
-System.out.println("ca.concept.getUserProgressEstimator(user)=" + ca.concept.getUserProgressEstimator(user));					
+//System.out.println("ca.concept=" + ca.concept);					
+//System.out.println("ca.concept.getUserProgressEstimator(user)=" + ca.concept.getUserProgressEstimator(user));					
 					double c_progress = ca.concept.getUserProgressEstimator(user).getKnowledgeLevels()[iProgressEstimator.BLOOM_IDX_APPLICATION].getProgress();
 					double weight = ca.weight;
 					weight /= Math.pow/**/(( (act.getProgress(user)*act.getCount(user) + 1)*
