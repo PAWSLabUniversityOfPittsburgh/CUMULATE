@@ -18,6 +18,7 @@
 
 	<target name="clean" description="clean up" >
 		<!-- Delete the ${build} and ${dist} directory trees -->
+
 		<delete file="${war_file}"/>
 		<delete dir="${build}"/>
 		<delete dir="${build_1_4}"/>

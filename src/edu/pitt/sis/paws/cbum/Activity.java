@@ -142,7 +142,6 @@ public class Activity extends Item2
 				(concept_links.get(i).getDirection() == ConceptActivity.DIR_OUTCOM)))
 			{
 	
-
 //if(concept_links.get(i).getConcept().getId()==190)		
 				weight_sum += concept_links.get(i).getWeight();
 //if(this.getId()==970)		
