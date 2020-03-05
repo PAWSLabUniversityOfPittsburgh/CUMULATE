@@ -11,6 +11,7 @@
   
   <build>
 		<finalName>paws-cbum</finalName>
+		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<!-- Set a JDK compiler level -->
 			<plugin>
