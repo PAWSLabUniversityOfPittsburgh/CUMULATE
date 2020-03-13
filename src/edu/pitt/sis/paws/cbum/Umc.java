@@ -82,6 +82,9 @@ public class Umc extends javax.servlet.http.HttpServlet implements javax.servlet
 		 */
 		String randomUUID = UUID.randomUUID().toString(); // To make the connection between um2.ent_user_activity and um2.ent_user_knowledge_updates
 		req_svc = req_svc != null? req_svc + ";" + randomUUID:null;
+		if(req_group.contains("aaltosql")) { // Due to inconsistency in SQL-Tutor side, the group parameter is being sent as lower case for some problems.
+			req_group = req_group.toUpperCase();
+		}
 		callUM(req_user, req_group, req_app, req_subactivity,req_result,req_svc,req_session);
 		
 		// decode
@@ -386,10 +389,16 @@ public class Umc extends javax.servlet.http.HttpServlet implements javax.servlet
 			{
 				if(cons_in_dom.get(i).booleanValue() && values_proper.get(i).booleanValue())
 				{
+					String active = "1";
+					
+					if(req_group.toLowerCase().contains("aaltosql20")) {
+						active = "0";
+					}
+					
 					qry_values += ((qry_values.length()>0)?",":"") + "(" + app.getId() + "," + user.getId() + "," + group.getId() +
 					","+ dom.getId() + "," + cons.get(i).getId() + "," + values.get(i).doubleValue() + 
 					",'" + req_session + "','" + s_date + "'," + time_ns + ",'" + req_svc + "','"+ 
-					all_parameters + "')";
+					all_parameters + "','" + active + "')";
 					
 					
 					
@@ -401,7 +410,7 @@ public class Umc extends javax.servlet.http.HttpServlet implements javax.servlet
 			}
 			qry = "INSERT INTO ent_user_knowledge_updates (AppID, UserID, " + 
 			"GroupID, DomainID, ConceptID, Value, Session, DateNTime, DateNTimeNS, " + 
-			"SVC, AllParameters) VALUES" + qry_values + ";";
+			"SVC, AllParameters, active) VALUES" + qry_values + ";";
 			
 			stmt = conn.prepareStatement(qry);
 			stmt.executeUpdate();

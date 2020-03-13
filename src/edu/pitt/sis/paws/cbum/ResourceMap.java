@@ -558,7 +558,7 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 			qry = "SELECT * FROM ent_user_activity " + ((cutout_date!=null)?"WHERE DateNTime>='"+cutout_date+"' ":"") +"ORDER BY DateNTime;"; 
 			//System.out.println(qry);
 			
-			String qryK = "SELECT * FROM ent_user_knowledge_updates " + ((cutout_date!=null)?"WHERE DateNTime<='"+cutout_date+"' ":"") +"ORDER BY DateNTime;"; 
+			String qryK = "SELECT * FROM ent_user_knowledge_updates WHERE active=1 " + ((cutout_date!=null)?"AND DateNTime<='"+cutout_date+"' ":"") +"ORDER BY DateNTime;"; 
 //				"WHERE DateNTime BETWEEN '2007-01-01 00:00:00.000' AND '2007-01-17 00:00:00.000' ORDER BY DateNTime;";// WHERE DateNTime='2006-11-17 11:45:18.240';";
 //				"WHERE DateNTime BETWEEN '2007-01-17 00:00:00.000' AND '2007-01-24 00:00:00.000' ORDER BY DateNTime;";// WHERE DateNTime='2006-11-17 11:45:18.240';";
 //				"WHERE DateNTime BETWEEN '2007-01-24 00:00:00.000' AND '2007-01-31 00:00:00.000' ORDER BY DateNTime;";// WHERE DateNTime='2006-11-17 11:45:18.240';";
@@ -667,7 +667,12 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 				{
 					case 1: // activity
 						A_user.updateHash(A_date_n_time, A_act.getApp().getId());
-						A_group.updateHash(A_date_n_time, A_act.getApp().getId());
+						try {
+							A_group.updateHash(A_date_n_time, A_act.getApp().getId());
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
+						
 
 						long tic = 0;
 						if("--matador--".equalsIgnoreCase(A_svc))
