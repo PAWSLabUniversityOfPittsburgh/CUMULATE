@@ -83,7 +83,8 @@ public class um_cache2 extends HttpServlet
 		String req_result = request.getParameter(REQ_RESULT);
 		String req_ip = request.getParameter(REQ_IP);
 		String req_code = request.getParameter(REQ_CODE);//Added by @Jordan | for getting submitted code by student in PCRS
-//System.out.println("~~~ [CBUM] um_cache2 svc=" + req_svc);	
+		//System.out.println("~~~ [CBUM] um_cache2 svc=" + req_svc);
+		//System.out.println("req_code:"+req_code);
 		
 		// decode parameters
 		req_activity = (req_activity!=null)?URLDecoder.decode(req_activity, "UTF-8"):"";//req_activity;
@@ -101,7 +102,9 @@ public class um_cache2 extends HttpServlet
 				";res=" + req_result + ";sid=" + req_session + ";svc=" + req_svc + ";ip=" + req_ip;
 
 		if(req_code!=null) {
-			req_code = URLDecoder.decode(req_code, "UTF-8");//req_code;|Added by @Jordan
+			//req_code = URLDecoder.decode(req_code, "ASCII");//req_code;|Added by @Jordan
+			//req_code = req_code.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
+	        //req_code = req_code.replaceAll("\\+", "%2B");
 			all_parameters = all_parameters + ";cod=" + req_code;//Added by @Jordan
 		}
 		
@@ -415,14 +418,14 @@ public class um_cache2 extends HttpServlet
 			java.util.Date date = new java.util.Date();
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			String s = formatter.format(date);
-			// Submit acticvity into the database
+			// Submit activity into the database
 			qry = "INSERT INTO ent_user_activity (AppID, UserID, " + 
 				"GroupID, Result, ActivityID, Session, DateNTime, " + 
 				"DateNTimeNS, SVC, AllParameters) VALUES (" + req_application+ "," + 
 				user_id + "," + group_id + ",'" + req_result + "'," + 
 				activity_id + ",'" + req_session + 
 				"','" + s + "'," + System.currentTimeMillis() + ", '" + req_svc + "','" + all_parameters + "');"; 
-//System.out.println("um2:qry="+qry);
+			//System.out.println("um2:qry="+qry);
 			stmt = conn.prepareStatement(qry);
 			stmt.executeUpdate();
 			
