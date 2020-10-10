@@ -417,16 +417,24 @@ public class um_cache2 extends HttpServlet
 			// Find the ID's of User, Group, Activity
 			java.util.Date date = new java.util.Date();
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			String s = formatter.format(date);
+			String formattedDate = formatter.format(date);
 			// Submit activity into the database
 			qry = "INSERT INTO ent_user_activity (AppID, UserID, " + 
 				"GroupID, Result, ActivityID, Session, DateNTime, " + 
-				"DateNTimeNS, SVC, AllParameters) VALUES (" + req_application+ "," + 
-				user_id + "," + group_id + ",'" + req_result + "'," + 
-				activity_id + ",'" + req_session + 
-				"','" + s + "'," + System.currentTimeMillis() + ", '" + req_svc + "','" + all_parameters + "');"; 
+				"DateNTimeNS, SVC, AllParameters) VALUES (?,?,?,?,?,?,?,?,?,?);"; 
 			//System.out.println("um2:qry="+qry);
 			stmt = conn.prepareStatement(qry);
+			stmt.setInt(1, Integer.parseInt(req_application));
+			stmt.setInt(2, user_id);
+			stmt.setInt(3, group_id);
+			stmt.setString(4, req_result);
+			stmt.setInt(5, activity_id);
+			stmt.setString(6, req_session);
+			stmt.setString(7, formattedDate);
+			stmt.setLong(8, System.currentTimeMillis());
+			stmt.setString(9, req_svc);
+			stmt.setString(10, all_parameters);
+			
 			stmt.executeUpdate();
 			
 			stmt.close();
@@ -435,7 +443,7 @@ public class um_cache2 extends HttpServlet
 			conn = null;
 			
 			// Add to Resource Map
-			sd.addNewUserActivityInt(Integer.parseInt(req_application), user_id, group_id, activity_id, req_result, s, request);
+			sd.addNewUserActivityInt(Integer.parseInt(req_application), user_id, group_id, activity_id, req_result, formattedDate, request);
 
 		}
 		catch(Exception e) { e.printStackTrace(System.out); }
