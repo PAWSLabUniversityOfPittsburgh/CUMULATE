@@ -51,7 +51,8 @@ public class um_cache2 extends HttpServlet
 	public static final String REQ_SVC = "svc";
 	public static final String REQ_RESULT = "res"; //answercheck
 	public static final String REQ_IP = "ip"; //answercheck
-	public static final String REQ_CODE = "cod";//submitted code, sent by PCRS
+	public static final String REQ_CODE = "cod";//submitted user code if any (Currently for only PCRS)
+	public static final String REQ_FULL_CODE = "full-cod"; //Submitted user code in context (with surrounded code to run the submitted code. (Currenly for only PCRS)
 	
 	//	Other
 	private static final String APPLICATION_UNKNOWN = "1";//"<Unknown Application>";
@@ -82,9 +83,9 @@ public class um_cache2 extends HttpServlet
 		String req_svc = request.getParameter(REQ_SVC);
 		String req_result = request.getParameter(REQ_RESULT);
 		String req_ip = request.getParameter(REQ_IP);
-		String req_code = request.getParameter(REQ_CODE);//Added by @Jordan | for getting submitted code by student in PCRS
-		//System.out.println("~~~ [CBUM] um_cache2 svc=" + req_svc);
-		//System.out.println("req_code:"+req_code);
+		String req_code = request.getParameter(REQ_CODE);
+		String req_full_code = request.getParameter(REQ_FULL_CODE);
+
 		
 		// decode parameters
 		req_activity = (req_activity!=null)?URLDecoder.decode(req_activity, "UTF-8"):"";//req_activity;
@@ -102,10 +103,11 @@ public class um_cache2 extends HttpServlet
 				";res=" + req_result + ";sid=" + req_session + ";svc=" + req_svc + ";ip=" + req_ip;
 
 		if(req_code!=null) {
-			//req_code = URLDecoder.decode(req_code, "ASCII");//req_code;|Added by @Jordan
-			//req_code = req_code.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
-	        //req_code = req_code.replaceAll("\\+", "%2B");
-			all_parameters = all_parameters + ";cod=" + req_code;//Added by @Jordan
+			all_parameters = all_parameters + ";cod=" + req_code;
+		}
+		
+		if(req_full_code!=null) {
+			all_parameters = all_parameters + ";fullcod=" + req_full_code;
 		}
 		
 		notifyMasteryGrid(req_user, req_result);
