@@ -129,5 +129,26 @@ public class KTUIDManager extends UIDManager
 		
 		return result;
 	}
+	
+	public boolean authenticateUser(String login, String md5password) throws SQLException
+	{
+		boolean result = false;
+		String sql = "SELECT * FROM ent_user u JOIN rel_user_user uu ON(u.UserID=uu.ChildUserID) " +
+				"JOIN ent_user g ON(uu.ParentUserID=g.UserID) WHERE u.Login='" + login + "' AND u.IsGroup=0 " +
+				"AND u.Pass='" + md5password +"';";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		while(rs.next())
+		{
+			result = true;
+			break;
+		}
+		rs.close();
+		rs = null;
+		stmt.close();
+		stmt = null;
+		
+		return result;
+	}
 
 }

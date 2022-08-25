@@ -312,7 +312,7 @@ public final class ReportAPI
 					"&res=" + _res +
 					"&grp=" + _grp +
 					"&svc=" + _svc +
-					"&ip=" + _ip;
+					"&ipe=" + _ip;
 		URLConnection dbpc = (new URL(report_url)).openConnection();
 		BufferedReader in = new BufferedReader(new InputStreamReader(
 			dbpc.getInputStream()));

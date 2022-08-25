@@ -46,6 +46,7 @@ public abstract class UIDManager
 	public void addUserRollBack() throws SQLException { conn.rollback(); conn.setAutoCommit(autocommit); }
 	
 	public abstract boolean authenticateUser(String login, String md5password, String group) throws SQLException;
+	
 //	{
 //		boolean result = true;
 //		return result;
