@@ -176,6 +176,8 @@ public class Concept extends Item2
 				case 9:
 				case 11:
 				case 12:
+				case 15:
+				case 16:
 					estimator_type = iProgressEstimator.ESTIMATOR_ASSYMPTOTIC;
 				break;
 				case 0:

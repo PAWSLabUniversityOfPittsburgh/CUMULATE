@@ -662,6 +662,7 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 				
 				//System.out.println("Decision: "+decision);
 				//System.out.println("A_date_n_time: "+ A_date_n_time);
+				
 			
 				switch (decision)
 				{
@@ -1119,7 +1120,7 @@ System.out.println("mem.free : " + Runtime.getRuntime().freeMemory());
 			 ((_app_id == 17) && (_score >= 0) && (_score <= 1)) || // JEliot
 			 ((_app_id == 23) && (_score >= 0) && (_score <= 1)) || // Xin's SQL-KnoT
 			 ((_app_id == 25) && (_score >= 0) && (_score <= 1)) || // QuizJET
-			 //((_app_id == 41) && (_score >= 0) && (_score <= 1))  // QuizPet
+			 ((_app_id == 41) && (_score >= 0) && (_score <= 1)) || // QuizPet
 			 ((_app_id == 51) && (_score >= 0) && (_score <= 1)) || // QuizJET table tracing
 			 ((_app_id == 47) && (_score >= 0) && (_score <= 1)) || // PCEX Challenges
 			 ((_app_id == 44) && (_score >= 0) && (_score <= 1)) ||   // PCRS (Coding problems)
