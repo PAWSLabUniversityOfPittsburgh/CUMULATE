@@ -110,6 +110,41 @@ public class um_cache2 extends HttpServlet
 			all_parameters = all_parameters + ";fullcod=" + req_full_code;
 		}
 		
+		// Kamil: Workaround fix for integration with Utrecht for StudyLens system
+		// Has to be replaced with LTI integration in near future (today: 01/17/2023)
+		// Remove this if we are not collaborating with them anymore
+		if(req_group != null && req_group.equals("CoTaPP23")) {
+			// Redirect incoming traffic to Utrecht without storing our database due to data privacy laws in Europe
+			
+			String redirect_result = "";
+			HttpURLConnection con = null;
+			try {
+				URL url = new URL("https://studylens.science.uu.nl/backend/api/postPawsContentLevels?"+ all_parameters.replaceAll(";","&"));
+				con = (HttpURLConnection) url.openConnection();
+				con.setRequestMethod("GET");
+				con.connect();
+				int status = con.getResponseCode();
+				if(status == HttpURLConnection.HTTP_OK) {
+					redirect_result = "REDIRECT success";
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				redirect_result = "REDIRECT fail";
+			} finally {
+				if(con != null) {
+					con.disconnect();
+				}
+			}
+			
+			response.setContentType("text/html; charset=utf-8");
+			PrintWriter out = response.getWriter();
+			out.println(redirect_result);
+			//System.out.println(result);
+			out.close();
+			return;
+		}
+		
 		notifyMasteryGrid(req_user, req_result);
 
 		boolean app_found = false;
