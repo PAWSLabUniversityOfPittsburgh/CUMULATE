@@ -509,7 +509,7 @@ public class um_cache2 extends HttpServlet
 		if(user != null && result!= null && (Double.parseDouble(result) == 0.0 || Double.parseDouble(result) == 1.0)) {
 			HttpURLConnection con = null;
 			try {
-				URL url = new URL("http://pawscomp2.sis.pitt.edu/mgnotificate/api/notifyuser?usr="+ user + "&res=" + result);
+				URL url = new URL("http://localhost/mgnotificate/api/notifyuser?usr="+ user + "&res=" + result);
 				con = (HttpURLConnection) url.openConnection();
 				con.setRequestMethod("GET");
 				con.connect();

@@ -452,7 +452,7 @@ public class Umc extends javax.servlet.http.HttpServlet implements javax.servlet
 		StringBuilder urlParameterBuilder = new StringBuilder();
 		
 		try {
-			urlParameterBuilder.append("http://adapt2.sis.pitt.edu/cbum/um?");
+			urlParameterBuilder.append("http://localhost/cbum/um?");
 			urlParameterBuilder.append("usr=").append(user).append("&");
 			urlParameterBuilder.append("grp=").append(group).append("&");
 			urlParameterBuilder.append("app=").append(app).append("&");
