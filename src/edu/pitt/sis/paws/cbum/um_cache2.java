@@ -11,18 +11,26 @@
  */
 package edu.pitt.sis.paws.cbum;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.Provider;
+import java.security.Security;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -117,30 +125,26 @@ public class um_cache2 extends HttpServlet
 			// Redirect incoming traffic to Utrecht without storing our database due to data privacy laws in Europe
 			
 			String redirect_result = "";
-			HttpURLConnection con = null;
-			try {
-				URL url = new URL("https://studylens.science.uu.nl/backend/api/postPawsContentLevels?"+ all_parameters.replaceAll(";","&"));
-				con = (HttpURLConnection) url.openConnection();
-				con.setRequestMethod("GET");
-				con.connect();
-				int status = con.getResponseCode();
-				if(status == HttpURLConnection.HTTP_OK) {
-					redirect_result = "REDIRECT success";
-				}
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-				redirect_result = "REDIRECT fail";
-			} finally {
-				if(con != null) {
-					con.disconnect();
-				}
-			}
+			URL url = new URL("https://studylens.science.uu.nl/backend/api/postPawsContentLevels?"+ all_parameters.replaceAll(";","&"));
 			
+			String command = "curl " + url;
+
+			Process process = Runtime.getRuntime().exec(command);
+			try {
+				process.waitFor();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				redirect_result += line + "\n";
+			}
+				
 			response.setContentType("text/html; charset=utf-8");
 			PrintWriter out = response.getWriter();
 			out.println(redirect_result);
-			//System.out.println(result);
 			out.close();
 			return;
 		}
